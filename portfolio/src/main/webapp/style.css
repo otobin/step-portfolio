@@ -1,3 +1,7 @@
+body {
+    background-color: #3aafa9;
+}
+
 #side-navigation {
     height: 100%;
     width: 0;
@@ -5,7 +9,7 @@
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #3aafa9;
+    background-color: #2b7a78;
     overflow-x: hidden;
     font-family: 'Oswald', sans-serif;
     transition: 0.5s;
@@ -23,6 +27,11 @@
     color: #feffff;
 }
 
+#top-span {
+    font-family: 'Oswald', sans-serif;
+    font-size: 25px;
+}
+
 #main-content {
     top: 0;
     height: 100%;
@@ -31,6 +40,36 @@
     font-family: 'Oswald', sans-serif;
     overflow-y: scroll;
 }
+
+#typewriter {
+  border-right: solid 3px rgba(0,255,0,.75);
+  white-space: nowrap;
+  overflow: hidden;    
+  font-family: 'Source Code Pro', monospace;  
+  font-size: 28px;
+  color: rgba(255,255,255,.70);
+}
+
+/* Animation */
+#typewriter {
+  animation: animated-text 4s steps(29) 1s 1 normal both,
+             animated-cursor 600ms steps(29) infinite;
+}
+
+/* text animation */
+
+@keyframes animated-text{
+  from{width: 0;}
+  to{width: 472px;}
+}
+
+/* cursor animations */
+
+@keyframes animated-cursor{
+  from{border-right-color: rgba(0,255,0,.75);}
+  to{border-right-color: transparent;}
+}
+
 
 
 
