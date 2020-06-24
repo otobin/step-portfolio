@@ -1,27 +1,33 @@
-.side-navigation {
+#side-navigation {
     height: 100%;
-    width: 160px;
+    width: 0;
     position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: cadetblue;
+    background-color: #3aafa9;
     overflow-x: hidden;
     font-family: 'Oswald', sans-serif;
+    transition: 0.5s;
 }
-.side-navigation a {
+#side-navigation a {
   padding: 6px 8px 6px 16px;
   font-size: 25px;
-  color: #c0ccd4;
+  color: #17252a;
   display: block;
+  text-decoration: none;
+  transition: 0.3s;
 }
 
-.main-content {
-    margin-left: 160px;
+#side-navigation a:hover {
+    color: #feffff;
+}
+
+#main-content {
     top: 0;
     height: 100%;
-    background-color: cadetblue;
-    color: #c0ccd4;
+    background-color: #3aafa9;
+    color: #17252a;
     font-family: 'Oswald', sans-serif;
     overflow-y: scroll;
 }

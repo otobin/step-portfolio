@@ -16,12 +16,24 @@
  * Adds a random greeting to the page.
  */
 function addRandomFact() {
-  const random_facts =
-      ["I'm currently learning how to juggle", "I want to set foot on all 7 continents", "My Favorite food is pesto pasta"];
+  const facts =
+      ["I want to set foot on all 7 Continents",
+       "My favorite food is pesto pasta", 
+       "I have a cat named Dash", 
+       "I used to have a cyst behind my ear that I named 'Ear Bubble'"];
 
-  // Pick a random greeting.
-  const random_fact = ramdom_facts[Math.floor(Math.random() * random_facts.length)];
+  // Pick a random fact.
+  const fact = facts[Math.floor(Math.random() * facts.length)];
 
   // Add it to the page.
-  document.getElementById("random-fact").innerHTML = random_fact;
+  const factContainer = document.getElementById('fact-container');
+  factContainer.innerText = fact;
+}
+
+function openNav() {
+    document.getElementById("side-navigation").style.width = "160px";
+}
+
+function closeNav() {
+    document.getElementById("side-navigation").style.width = "0";
 }
