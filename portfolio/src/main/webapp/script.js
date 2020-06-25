@@ -37,3 +37,11 @@ function openNav() {
 function closeNav() {
     document.getElementById("side-navigation").style.width = "0";
 }
+
+function makeTransparent(img) {
+    img.opacity = .5;
+}
+
+function makeOpaque(img) {
+    img.opacity = 1;
+}

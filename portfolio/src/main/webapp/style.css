@@ -70,6 +70,6 @@ body {
   to{border-right-color: transparent;}
 }
 
-
-
-
+img:hover {
+    opacity: 0.5;
+}
