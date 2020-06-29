@@ -15,6 +15,35 @@
 /**
  * Adds a random greeting to the page.
  */
+var slideIndex = 0;
+showSlides();
+
+function showSlides() {
+  var i;
+  var slides = document.getElementsByClassName("my-slides");
+  console.log(slides);
+  var dots = document.getElementsByClassName("dot");
+  console.log(slides);
+  console.log(slides.length);
+  for (i = 0; i < slides.length; i++) {
+    console.log(slides[i].classList[0]);
+    slides[i].style.display = "none";  
+    console.log(slides[i].style.display);
+  }
+  slideIndex++;
+  console.log(slideIndex);
+  if (slideIndex > slides.length) {slideIndex = 1}    
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" active", "");
+  }
+  console.log(slides[0]);
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+  setTimeout(showSlides, 2000); // Change image every 2 seconds
+}
+
+
+
 function addRandomFact() {
   const facts =
       ["I want to set foot on all 7 Continents",
