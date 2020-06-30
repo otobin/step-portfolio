@@ -67,10 +67,12 @@ function closeNav() {
     document.getElementById("side-navigation").style.width = "0";
 }
 
-function makeTransparent(img) {
-    img.opacity = .5;
+function getServletData() {
+    fetch('/data').then(response => response.text()).then( (response) => {
+        document.getElementById('dataButton').innerText = response;
+    });
 }
 
-function makeOpaque(img) {
-    img.opacity = 1;
+function getMovieQuote() {
+    fetch('/data').then(response => response.json()).then(console.log(response));
 }
