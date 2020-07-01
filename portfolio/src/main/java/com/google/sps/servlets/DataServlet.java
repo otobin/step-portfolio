@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import com.google.sps.data.Comment;
 
 /** Data servlet that adds comments to datastore via the post function and 
     displays previous comments via the post function.  */
@@ -40,13 +41,14 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<String> comments = new ArrayList<>();
+    List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
       String name = (String) entity.getProperty("name");
       String text = (String) entity.getProperty("text");
       long timestamp = (long) entity.getProperty("timestamp");
-      String combinedComment = (new Date(timestamp).toString()) + ": " + name + "--" + text;
-      comments.add(combinedComment);
+      long id = entity.getKey().getId();
+      Comment currentComment = new Comment(timestamp, name, text, id);
+      comments.add(currentComment);
     }
     Gson gson = new Gson();
     response.setContentType("application/json;");

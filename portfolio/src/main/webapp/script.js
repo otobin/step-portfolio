@@ -61,15 +61,28 @@ function closeNav() {
 
 /** Creates an <li> element containing text that will display a comment*/
 function createCommentElement(comment) {
-  const list_element = document.createElement("li");
-  list_element.innerText = comment;
-  return list_element;
+  const commentElement = document.createElement("div");
+  commentElement.className = "comment";
+
+  const timestampElement = document.createElement("div");
+  timestampElement.innerText = new Date(comment.timestamp).toString();
+
+  const nameElement = document.createElement("div");
+  nameElement.innerText = comment.name;
+
+  const textElement = document.createElement("div");
+  textElement.innerText = comment.text;
+
+  commentElement.appendChild(timestampElement);
+  commentElement.appendChild(nameElement);
+  commentElement.appendChild(textElement);
+  return commentElement;
 }
 
 /* Fetches data from JavaServlet and displays the comments on index.html */
 function displayComments() {
     fetch('/data').then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('comments-list');
+    const commentListElement = document.getElementById('comment-container');
     comments.forEach((comment) => {
       commentListElement.appendChild(createCommentElement(comment));
     })
