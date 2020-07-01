@@ -26,8 +26,9 @@ import java.util.*;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  private ArrayList<String> data;
-  /* Modify DataServlet so its doGet() function returns the ArrayList as a JSON String. */
+  /* data is an ArrayList made up of strings that represent comments that have been given */
+  private ArrayList<String> data; 
+  
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
       /** Create a ArrayList<String> variable containing hard coded famous movie quotes */
@@ -41,6 +42,13 @@ public class DataServlet extends HttpServlet {
     String json = convertToJson(movieQuotes);
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String comment = request.getParameter("comment-input");
+    data.add(comment);
+    response.sendRedirect("/index.html");
   }
   
   /* Convert to JSOn using Gson */

@@ -26,9 +26,12 @@
       <p></p>
       <a href="https://www.linkedin.com/in/olivia-tobin-885a9b132?trk=public_profile_samename_profile_profile-result-card_result-card_full-click"><i class="fa fa-linkedin-square fa-2x"></i></a>
       <a href="https://github.com/otobin?tab=overview&from=2020-01-01&to=2020-01-19"><i class="fa fa-github-square fa-2x"></i></a>
-      <p>Click here for a Java Servlet Message!</p>
-      <button onclick="getServletData()">Click me!</button> 
-      <div id="dataButton"></div>
+      <p>Send me some comments/feedback about the webpage!</p>
+      <form action="/data" method="POST">
+         <label type="comment">Comment:</label>
+         <input type="text" name="comment-input">
+         <input type="submit">
+      </form> 
     </div>
   </body>
 </html>
