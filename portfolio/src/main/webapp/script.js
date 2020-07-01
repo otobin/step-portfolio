@@ -67,12 +67,19 @@ function closeNav() {
     document.getElementById("side-navigation").style.width = "0";
 }
 
-function getServletData() {
-    fetch('/data').then(response => response.text()).then( (response) => {
-        document.getElementById('dataButton').innerText = response;
-    });
+/** Creates an <li> element containing text. */
+function createCommentElement(comment) {
+  const list_element = document.createElement("li");
+  list_element.innerText = comment;
+  return list_element;
 }
 
-function getMovieQuote() {
-    fetch('/data').then(response => response.json()).then(console.log(response));
+function displayComments() {
+    fetch('/data').then(response => response.json()).then((comments) => {
+    const commentListElement = document.getElementById('comments-list');
+    comments.forEach((comment) => {
+      commentListElement.appendChild(createCommentElement(comment));
+    })
+  });
 }
+

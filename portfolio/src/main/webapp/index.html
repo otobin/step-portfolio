@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="displayComments()">
     <span id="top-span" onclick="openNav()">&#9776;Olivia Tobin</span>
     <div id="side-navigation">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -34,6 +34,8 @@
          <input type="text" name="user_comment">
          <input type="submit">
       </form> 
+      <p>Some comments I've received:</p>
+      <ul id="comments-list"></ul>
     </div>
   </body>
 </html>

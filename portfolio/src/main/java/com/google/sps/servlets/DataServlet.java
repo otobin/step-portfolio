@@ -18,6 +18,10 @@ import com.google.gson.*;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,44 +33,41 @@ import java.util.*;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  /* data is an ArrayList made up of strings that represent comments that have been given */
-  private ArrayList<String> data; 
-  
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-      /** Create a ArrayList<String> variable containing hard coded famous movie quotes */
-    ArrayList<String> movieQuotes = new ArrayList<String>(
-        Arrays.asList("According to all known laws of aviation, there is no way a bee should be able to fly",
-                        "This conversation can serve no purpose anymore. Goodbye.",
-                        "It is the TITULAR role",
-                        "Honey? Where is my supersuit"
-                    )
-    );
-    String json = convertToJson(movieQuotes);
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    List<String> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      String name = (String) entity.getProperty("name");
+      String text = (String) entity.getProperty("text");
+      long timestamp = (long) entity.getProperty("timestamp");
+      String combined_comment = (new Date(timestamp).toString()) + ": " + name + "--" + text;
+      comments.add(combined_comment);
+    }
+    Gson gson = new Gson();
     response.setContentType("application/json;");
-    response.getWriter().println(json);
+    response.getWriter().println(gson.toJson(comments));
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String name = request.getParameter("user_name");
-    String comment = request.getParameter("user_comment");
+    String text = request.getParameter("user_comment");
     long timestamp = System.currentTimeMillis();
 
     Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("User", name);
-    commentEntity.setProperty("Comment", comment);
+    commentEntity.setProperty("name", name);
+    commentEntity.setProperty("text", text);
+    commentEntity.setProperty("timestamp", timestamp);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
 
     response.sendRedirect("/index.html");
   }
-  
-  /* Convert to JSOn using Gson */
-  private String convertToJson(ArrayList<String> data) {
-    Gson gson = new Gson();
-    String json = gson.toJson(data);
-    return json;
-  }
+
 }
