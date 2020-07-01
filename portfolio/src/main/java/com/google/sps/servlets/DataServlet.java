@@ -45,8 +45,8 @@ public class DataServlet extends HttpServlet {
       String name = (String) entity.getProperty("name");
       String text = (String) entity.getProperty("text");
       long timestamp = (long) entity.getProperty("timestamp");
-      String combined_comment = (new Date(timestamp).toString()) + ": " + name + "--" + text;
-      comments.add(combined_comment);
+      String combinedComment = (new Date(timestamp).toString()) + ": " + name + "--" + text;
+      comments.add(combinedComment);
     }
     Gson gson = new Gson();
     response.setContentType("application/json;");
