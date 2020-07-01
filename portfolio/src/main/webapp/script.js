@@ -21,27 +21,19 @@ showSlides();
 function showSlides() {
   var i;
   var slides = document.getElementsByClassName("my-slides");
-  console.log(slides);
   var dots = document.getElementsByClassName("dot");
-  console.log(slides);
-  console.log(slides.length);
   for (i = 0; i < slides.length; i++) {
-    console.log(slides[i].classList[0]);
     slides[i].style.display = "none";  
-    console.log(slides[i].style.display);
   }
   slideIndex++;
-  console.log(slideIndex);
   if (slideIndex > slides.length) {slideIndex = 1}    
   for (i = 0; i < dots.length; i++) {
     dots[i].className = dots[i].className.replace(" active", "");
   }
-  console.log(slides[0]);
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
   setTimeout(showSlides, 2000); // Change image every 2 seconds
 }
-
 
 
 function addRandomFact() {
@@ -67,13 +59,14 @@ function closeNav() {
     document.getElementById("side-navigation").style.width = "0";
 }
 
-/** Creates an <li> element containing text. */
+/** Creates an <li> element containing text that will display a comment*/
 function createCommentElement(comment) {
   const list_element = document.createElement("li");
   list_element.innerText = comment;
   return list_element;
 }
 
+/* Fetches data from JavaServlet and displays the comments on index.html */
 function displayComments() {
     fetch('/data').then(response => response.json()).then((comments) => {
     const commentListElement = document.getElementById('comments-list');
