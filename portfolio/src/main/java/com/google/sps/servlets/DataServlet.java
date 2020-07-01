@@ -14,19 +14,39 @@
 
 package com.google.sps.servlets;
 
+import com.google.gson.*;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-
+  
+  private ArrayList<String> data;
+  /* Modify DataServlet so its doGet() function returns the ArrayList as a JSON String. */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("<h1>Hello world!</h1>");
+      /** Create a ArrayList<String> variable containing hard coded famous movie quotes */
+    ArrayList<String> movieQuotes = new ArrayList<String>(
+        Arrays.asList("According to all known laws of aviation, there is no way a bee should be able to fly",
+                        "This conversation can serve no purpose anymore. Goodbye.",
+                        "It is the TITULAR role",
+                        "Honey? Where is my supersuit"
+                    )
+    );
+    String json = convertToJson(movieQuotes);
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
+  }
+  
+  /* Convert to JSOn using Gson */
+  private String convertToJson(ArrayList<String> data) {
+    Gson gson = new Gson();
+    String json = gson.toJson(data);
+    return json;
   }
 }
