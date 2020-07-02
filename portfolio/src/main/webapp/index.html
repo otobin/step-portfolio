@@ -27,7 +27,7 @@
       <a href="https://www.linkedin.com/in/olivia-tobin-885a9b132?trk=public_profile_samename_profile_profile-result-card_result-card_full-click"><i class="fa fa-linkedin-square fa-2x"></i></a>
       <a href="https://github.com/otobin?tab=overview&from=2020-01-01&to=2020-01-19"><i class="fa fa-github-square fa-2x"></i></a>
       <p>Send me some comments/feedback about the webpage!</p>
-      <form action="/data" method="POST">
+      <form action="/comments" method="POST">
          <label type="name">Name:</label>
          <input type="text" name="user_name" required>
          <label type="comment">Comment:</label>
@@ -35,6 +35,10 @@
          <input type="submit">
       </form> 
       <p>Some comments I've received:</p>
+      <form action="/comments">
+        <label for="quantity">Number of comments to show:</label>
+        <input type="number" id="num-comments" value=5 name="num-comments" min=0 onchange="displayComments()">
+      </form>
       <div id="comment-container"></div>
     </div>
   </body>

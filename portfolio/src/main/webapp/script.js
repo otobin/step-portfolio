@@ -81,8 +81,12 @@ function createCommentElement(comment) {
 
 /* Fetches data from JavaServlet and displays the comments on index.html */
 function displayComments() {
-    fetch('/data').then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('comment-container');
+    // Clear out old commments first
+    const commentListElement = document.getElementById("comment-container");
+    commentListElement.innerText = "";
+    const maxComments = document.getElementById("num-comments").value;
+    // Then fetch new comments
+    fetch('/comments?numComments=' + maxComments.toString()).then(response => response.json()).then((comments) => {
     comments.forEach((comment) => {
       commentListElement.appendChild(createCommentElement(comment));
     })

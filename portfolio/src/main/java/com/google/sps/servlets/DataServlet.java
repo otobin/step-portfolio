@@ -32,17 +32,22 @@ import com.google.sps.data.Comment;
 
 /** Data servlet that adds comments to datastore via the post function and 
     displays previous comments via the post function.  */
-@WebServlet("/data")
+@WebServlet("/comments")
 public class DataServlet extends HttpServlet {
   
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("text/html;");
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    int maxComments = Integer.parseInt(request.getParameter("numComments"));
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
+      if (comments.size() == maxComments) {
+        break;
+      }
       String name = (String) entity.getProperty("name");
       String text = (String) entity.getProperty("text");
       long timestamp = (long) entity.getProperty("timestamp");
@@ -51,7 +56,6 @@ public class DataServlet extends HttpServlet {
       comments.add(currentComment);
     }
     Gson gson = new Gson();
-    response.setContentType("application/json;");
     response.getWriter().println(gson.toJson(comments));
   }
 
