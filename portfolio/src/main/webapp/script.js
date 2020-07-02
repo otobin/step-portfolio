@@ -93,3 +93,8 @@ function displayComments() {
   });
 }
 
+function deleteAllComments() {
+    const responsePromise = fetch('/delete-data', {method: 'POST'});
+    responsePromise.then(displayComments());
+}
+
