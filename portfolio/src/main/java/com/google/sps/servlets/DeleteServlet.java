@@ -21,8 +21,7 @@ import com.google.sps.data.Comment;
 
 
 
-/** Data servlet that adds comments to datastore via the post function and 
-    displays previous comments via the post function.  */
+/** Data servlet that deletes all comments via the post function */
 @WebServlet("/delete-data")
 public class DeleteServlet extends HttpServlet {
     // Deletes all comments
@@ -35,6 +34,6 @@ public class DeleteServlet extends HttpServlet {
       Key key = entity.getKey();
       datastore.delete(key);
     }
+    response.sendRedirect("/index.html");
   }
-
 }

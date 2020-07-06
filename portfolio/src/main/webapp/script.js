@@ -93,6 +93,15 @@ function displayComments() {
   });
 }
 
+function confirmDeletion() {
+    if (confirm("Are you sure you would like to delete all comments?")) {
+        deleteAllComments();
+    } else {
+        displayComments();
+    }
+}
+
+
 function deleteAllComments() {
     const responsePromise = fetch('/delete-data', {method: 'POST'});
     responsePromise.then(displayComments());
