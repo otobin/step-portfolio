@@ -108,7 +108,22 @@ function deleteAllComments() {
 }
 
 function createMap() {
+
+  // Initialize the map to show UC Davis and downtown Davis
   const davis_map = new google.maps.Map(
       document.getElementById('map'),
-      {center: {lat: 38.5382, lng: -121.7617}, zoom: 14});
+      {center: {lat: 38.5449, lng: -121.7405}, zoom: 14});
+  var names = ["Philz Coffee", "Mishka's Cafe", "Peet's Coffee", "Temple Coffee Roasters", "ASUCD Coffee House"];
+  var coordinates = [ {lat: 38.544331, lng: -121.735481}, 
+                    {lat: 38.543150, lng: -121.740530}, 
+                    {lat: 38.544110, lng: -121.741800},
+                    {lat: 38.544781, lng: -121.739609}, 
+                    {lat: 38.542335, lng: -121.749454}];
+  for (var i = 0; i < 5; i++) {
+      var marker = new google.maps.Marker({
+          position: coordinates[i],
+          map: davis_map,
+          title: names[i]
+      });
+  }
 }
