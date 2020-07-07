@@ -107,20 +107,27 @@ function deleteAllComments() {
     responsePromise.then(displayComments());
 }
 
-function createMap() {
+function goToDiv(divIdentity) {
+    var url = "optobin.appspot."
+}
 
+
+function createMap() {
   // Initialize the map to show UC Davis and downtown Davis
   const davis_map = new google.maps.Map(
       document.getElementById('map'),
       {center: {lat: 38.5449, lng: -121.7405}, zoom: 14});
-  var names = ["Philz Coffee", "Mishka's Cafe", "Peet's Coffee", "Temple Coffee Roasters", "ASUCD Coffee House"];
-  var coordinates = [ {lat: 38.544331, lng: -121.735481}, 
+  let names = ["Philz Coffee", "Mishka's Cafe", "Peet's Coffee", "Temple Coffee Roasters", "ASUCD Coffee House"];
+  let divIds = ['philz', 'mishkas', 'peets', 'temple', 'asucd'];
+  let coordinates = [ {lat: 38.544331, lng: -121.735481}, 
                     {lat: 38.543150, lng: -121.740530}, 
                     {lat: 38.544110, lng: -121.741800},
                     {lat: 38.544781, lng: -121.739609}, 
                     {lat: 38.542335, lng: -121.749454}];
-  for (var i = 0; i < 5; i++) {
-      var marker = new google.maps.Marker({
+  
+  // To do: add event listeners for markers to animate dropdown menu
+  for (var i = 0; i < names.length; i++) {
+      const marker = new google.maps.Marker({
           position: coordinates[i],
           map: davis_map,
           title: names[i]
