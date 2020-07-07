@@ -107,3 +107,8 @@ function deleteAllComments() {
     responsePromise.then(displayComments());
 }
 
+function createMap() {
+  const davis_map = new google.maps.Map(
+      document.getElementById('map'),
+      {center: {lat: 38.5382, lng: -121.7617}, zoom: 14});
+}
