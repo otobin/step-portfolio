@@ -154,3 +154,9 @@ img:hover {
   height: 500px;
   width: 500px;
 }
+
+.dropdown {
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height ease-in-out .75s;
+}
