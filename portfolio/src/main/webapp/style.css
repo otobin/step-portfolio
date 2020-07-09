@@ -148,3 +148,9 @@ img:hover {
 .comment {
   border: 1px solid black;
 }
+
+#map {
+  border: thin solid black;
+  height: 500px;
+  width: 500px;
+}

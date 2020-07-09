@@ -103,7 +103,42 @@ function confirmDeletion() {
 
 
 function deleteAllComments() {
-    const responsePromise = fetch('/delete-data', {method: 'POST'});
-    responsePromise.then(displayComments());
+  const responsePromise = fetch('/delete-data', {method: 'POST'});
+  responsePromise.then(displayComments());
 }
 
+
+function createMap() {
+  // Initialize the map to show UC Davis and downtown Davis. 
+  let UCDAVIS_COORDINATES = {lat: 38.5449, lng: -121.7405};
+  let ZOOM_LEVEL = 14;
+  const davis_map = new google.maps.Map(
+      document.getElementById('map'), {
+      zoom: ZOOM_LEVEL,
+      center: UCDAVIS_COORDINATES
+      });
+  fetch('/markers').then(response => response.json()).then((markers) => {
+    markers.forEach(
+        (marker) => {
+            var mapMarker = new google.maps.Marker({
+                position: {lat: marker.lat, lng: marker.lng},
+                map: davis_map,
+                title: marker.name
+            });
+            addDescription(marker);
+  });
+  })
+}
+
+function addDescription(marker) {
+  const listElement = document.getElementById("locations-list");
+  const markerElement = document.createElement("li");
+  markerElement.innerText = marker.name;
+
+  const descriptionElement = document.createElement("p");
+  descriptionElement.innerText = marker.description;
+
+  listElement.appendChild(markerElement);
+  listElement.appendChild(descriptionElement);
+  return markerElement;
+}
