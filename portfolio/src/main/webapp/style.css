@@ -144,3 +144,13 @@ img:hover {
 .fa-linkedin-square {
   color: rgba(255, 255, 255, .70);
 }
+
+.comment {
+  border: 1px solid black;
+}
+
+#map {
+  border: thin solid black;
+  height: 500px;
+  width: 500px;
+}
