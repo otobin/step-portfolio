@@ -103,34 +103,42 @@ function confirmDeletion() {
 
 
 function deleteAllComments() {
-    const responsePromise = fetch('/delete-data', {method: 'POST'});
-    responsePromise.then(displayComments());
-}
-
-function goToDiv(divIdentity) {
-    var url = "optobin.appspot."
+  const responsePromise = fetch('/delete-data', {method: 'POST'});
+  responsePromise.then(displayComments());
 }
 
 
 function createMap() {
-  // Initialize the map to show UC Davis and downtown Davis
+  // Initialize the map to show UC Davis and downtown Davis. 
+  let UCDAVIS_COORDINATES = {lat: 38.5449, lng: -121.7405};
+  let ZOOM_LEVEL = 14;
   const davis_map = new google.maps.Map(
-      document.getElementById('map'),
-      {center: {lat: 38.5449, lng: -121.7405}, zoom: 14});
-  let names = ["Philz Coffee", "Mishka's Cafe", "Peet's Coffee", "Temple Coffee Roasters", "ASUCD Coffee House"];
-  let divIds = ['philz', 'mishkas', 'peets', 'temple', 'asucd'];
-  let coordinates = [ {lat: 38.544331, lng: -121.735481}, 
-                    {lat: 38.543150, lng: -121.740530}, 
-                    {lat: 38.544110, lng: -121.741800},
-                    {lat: 38.544781, lng: -121.739609}, 
-                    {lat: 38.542335, lng: -121.749454}];
-  
-  // To do: add event listeners for markers to animate dropdown menu
-  for (var i = 0; i < names.length; i++) {
-      const marker = new google.maps.Marker({
-          position: coordinates[i],
-          map: davis_map,
-          title: names[i]
+      document.getElementById('map'), {
+      zoom: ZOOM_LEVEL,
+      center: UCDAVIS_COORDINATES
       });
-  }
+  fetch('/markers').then(response => response.json()).then((markers) => {
+    markers.forEach(
+        (marker) => {
+            var mapMarker = new google.maps.Marker({
+                position: {lat: marker.lat, lng: marker.lng},
+                map: davis_map,
+                title: marker.name
+            });
+            addDescription(marker);
+  });
+  })
+}
+
+function addDescription(marker) {
+  const listElement = document.getElementById("locations-list");
+  const markerElement = document.createElement("li");
+  markerElement.innerText = marker.name;
+
+  const descriptionElement = document.createElement("p");
+  descriptionElement.innerText = marker.description;
+
+  listElement.appendChild(markerElement);
+  listElement.appendChild(descriptionElement);
+  return markerElement;
 }
