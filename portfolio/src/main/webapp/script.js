@@ -142,3 +142,17 @@ function addDescription(marker) {
   listElement.appendChild(descriptionElement);
   return markerElement;
 }
+
+function createOtherMap() {
+    // Set default bounds as a rectangle ranging from Sacramento, CA to Santa Cruz, CA 
+    // in order to personalize results for my geographic area
+    const defaultBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(38.5816, -121.4944),
+        new google.maps.LatLng(36.9741, -122.0308));
+    const options = {
+        bounds: defaultBounds
+    };
+    // Create the autocomplete object by fetching HTML search bar
+    const input = document.getElementById("search-bar");
+    var autocomplete = new google.maps.places.Autocomplete(input);
+}
