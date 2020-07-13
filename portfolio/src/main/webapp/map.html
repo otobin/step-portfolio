@@ -6,7 +6,7 @@
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body onload="createMap(); createOtherMap();">
+  <body onload="createMap();">
     <span id="top-span" onclick="openNav()">&#9776;Olivia Tobin</span>
     <div id="side-navigation">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -18,13 +18,27 @@
       <a href="map.html">Favorite Places</a>
     </div>
     <div id="main-content">
-      <p id="typewriter">Some of my favorite places</p>
+      <p id="typewriter">Browse Some of my Favorite Places or Give me a Recommendation!</p>
+      <input id="search-bar" placeholder="Type your Recommendation Here">
       <div id="map"></div>
-      <p>Here are the best coffee shops in Davis, ranked in terms of good tasting coffee, ambience, and wifi speed.</p>
-      <ol id="locations-list">
-      <p>Best Coffee Shops in Davis</p>
-      <input id="search-bar" placeholder="Search for a Place Here">
-      <div id="map2"></div>
+      <div id="listing">
+          <div id="results-table">
+              <tbody id="results"></tbody>
+          </div>
+      </div>
+      <div id="locations">
+          <div id="coffee">
+            <p>Here are the best coffee shops in Davis, ranked in terms of good tasting coffee, ambience, and wifi speed.</p>
+            <ol id="my-locations-list">
+            <p>Best Coffee Shops in Davis</p>
+            </ol>
+          </div>
+          <div id="recommendations">
+              <p> Here are some of the recommendations I've received </p>
+              <ol id="recommendations-list">
+              </ol>
+          </div>
+      </div>
     </div>
   </body>
 </html>

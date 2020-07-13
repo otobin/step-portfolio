@@ -20,10 +20,10 @@ import com.google.sps.data.Marker;
 @WebServlet("/markers")
 public class MarkerServlet extends HttpServlet {
   
+  // My markers, hard coded in the backend
   public static ArrayList<Marker> getMarkers() {
     ArrayList<Marker> markers = new ArrayList<>();
     //Order : name, description, lat, long
-    // I intend on using the Places API to fetch data in the next step, so these descriptions are just hard coded for now.
     String philzDescription = "It simply does not get much better than philz." + 
                             "Super fast wifi. Noise level is great " +
                           "for cramming for a midterm or working on a group projet with friends." +
@@ -57,6 +57,22 @@ public class MarkerServlet extends HttpServlet {
     String json = gson.toJson(markers);
 
     response.getWriter().println(json);
+  }
+
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String name = request.getParameter("user_name");
+    String text = request.getParameter("user_comment");
+    long timestamp = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("name", name);
+    commentEntity.setProperty("text", text);
+    commentEntity.setProperty("timestamp", timestamp);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+
+    response.sendRedirect("/map.html");
   }
 
 }

@@ -131,7 +131,7 @@ function createMap() {
 }
 
 function addDescription(marker) {
-  const listElement = document.getElementById("locations-list");
+  const listElement = document.getElementById("my-locations-list");
   const markerElement = document.createElement("li");
   markerElement.innerText = marker.name;
 
@@ -143,16 +143,26 @@ function addDescription(marker) {
   return markerElement;
 }
 
-function createOtherMap() {
-    // Set default bounds as a rectangle ranging from Sacramento, CA to Santa Cruz, CA 
-    // in order to personalize results for my geographic area
-    const defaultBounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(38.5816, -121.4944),
-        new google.maps.LatLng(36.9741, -122.0308));
-    const options = {
-        bounds: defaultBounds
-    };
+function getRecommendations() {
     // Create the autocomplete object by fetching HTML search bar
-    const input = document.getElementById("search-bar");
-    var autocomplete = new google.maps.places.Autocomplete(input);
+    const autocomplete = new google.maps.places.Autocomplete(
+            /** @type {!HTMLInputElement} */ (
+              document.getElementById("search-bar")), {
+              componentRestrictions: {'country': 'us'}
+            });
+    // Add listener in order to get place info when user selects it
+    places = new google.maps.places.PlacesService(map);
+    autocomplete.addListener('place_changed', onPlaceChanged);
+}
+
+function onPlaceChanged() {
+    // Put the recommendation marker on the map
+    const place = autocomplete.getPlace();
+    if (place.geometry) {
+          map.panTo(place.geometry.location);
+          map.setZoom(15);
+          
+        } else {
+          document.getElementById("search-bar").placeholder = "Enter a recommendation";
+        }
 }
