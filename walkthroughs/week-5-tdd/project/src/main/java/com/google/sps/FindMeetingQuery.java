@@ -14,14 +14,19 @@
 
 package com.google.sps;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public final class FindMeetingQuery {
-   // Given the currently booked events (time ranges and attendees) and
-   // a meeting request (duration and attendees), return a collection
-   // the of time ranges within which the meeting can be booked.
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-		HashSet<String> attendees = new HashSet<String>(request.getAttendees());		
+
+	// Given the currently booked events (time ranges and attendees) and a meeting request,
+	// (duration and attendees) return a collection of the time ranges within which the meeting
+	// can be booked 
+	public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+		HashSet<String> attendees = new HashSet<String>(request.getAttendees());
 		long duration = request.getDuration();
 		ArrayList<TimeRange> unavailableTimes = new ArrayList<TimeRange>();
 		ArrayList<TimeRange> availableTimes = new ArrayList<TimeRange>();
@@ -52,10 +57,11 @@ public final class FindMeetingQuery {
 			return entireDay;
 		}
 
-        // Sort the times by earliest start 
+		// Sort the times by earliest start 
         Collections.sort(unavailableTimes, TimeRange.ORDER_BY_START);
 
-		// Call consolidateAll(unavailableTimes) to combine overlapping events into one TimeRange
+		// Combine the required overlapping events into a list of separate timeranges to 
+        // make them easier to process in the second part
 		unavailableTimes = consolidateAll(unavailableTimes);
 
 		// Get the time before the first event.
@@ -64,6 +70,7 @@ public final class FindMeetingQuery {
 		if (startDif >= duration) {
 			availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, firstEvent.start(), false));
 		}
+
 		// Get the times in between the events 
 		for (int i = 0; i < unavailableTimes.size() - 1; i++) {
 			TimeRange currentEvent = unavailableTimes.get(i);
@@ -78,28 +85,26 @@ public final class FindMeetingQuery {
 		int endDif = TimeRange.END_OF_DAY - lastEvent.end();
 		if (endDif >= duration) {
 			availableTimes.add(TimeRange.fromStartEnd(lastEvent.end(), TimeRange.END_OF_DAY, true));
-		}  
+		}
 
-		// return
-		return availableTimes;
-  }
+		return availableTimes;  
+	}
 
 	// Takes in two TimeRanges that overlap and combines them into one larger one that 
 	// encompasses them both
 	public TimeRange consolidate(TimeRange timeRange1, TimeRange timeRange2) {
-        // 2 TimeRanges can overlap but not contain each other, but 2 TimeRanges
-        // cannot contain each other without overlapping, so the order on these 
-        // if else statements matters.
+    // 2 TimeRanges can overlap but not contain each other, but 2 TimeRanges
+    // cannot contain each other without overlapping, so the order on these 
+    // if else statements matters.
 		if (timeRange1.contains(timeRange2)) {
-            return TimeRange.fromStartEnd(timeRange1.start(), timeRange1.start() + timeRange1.duration(), false);
-        } else if (timeRange2.contains(timeRange1)) {
-            return TimeRange.fromStartEnd(timeRange2.start(), timeRange2.start() + timeRange2.duration(), false);
-        } else {
-            int start = Math.min(timeRange1.start(), timeRange2.start());
-            int end = Math.max(timeRange1.end(), timeRange2.end());
-            int duration = end - start;
-            return TimeRange.fromStartEnd(start, start + duration, false);
-        }
+			return timeRange1;
+		} else if (timeRange2.contains(timeRange1)) {
+			return timeRange2;
+		} else {
+			int start = Math.min(timeRange1.start(), timeRange2.start());
+			int end = Math.max(timeRange1.end(), timeRange2.end());
+			return TimeRange.fromStartEnd(start, end, false);
+		}
 	}
 
 	// consolidateAll takes in the list of unavailable times that are possibly overlapping
@@ -107,27 +112,16 @@ public final class FindMeetingQuery {
 	public ArrayList<TimeRange> consolidateAll(ArrayList<TimeRange> unavailableTimes) {
 		ArrayList<TimeRange> overLappingTimes = new ArrayList<TimeRange>(unavailableTimes);
 		ArrayList<TimeRange> nonOverLappingTimes = new ArrayList<TimeRange>();
-		while (!(overLappingTimes.isEmpty())) {
-			// Pop the first element from the overlapping events 
-			TimeRange currentTime = overLappingTimes.get(0);
-			overLappingTimes.remove(0);
-			// Look see if it overlaps with any existing events in the nonOverlappingEvents. 
-			// Combine the two TimeRanges or add the nonOverlapping event to the end. 
-			int index = 0;
-			boolean isOverlapping = false;
-            int size = nonOverLappingTimes.size();
-			while (index < size) {
-				if (nonOverLappingTimes.get(index).overlaps(currentTime)) {
-					TimeRange combinedTime = consolidate(nonOverLappingTimes.get(index), currentTime);
-					nonOverLappingTimes.set(index, combinedTime);
-					isOverlapping = true;
-				}
-				index++;
-			}
-			if (!isOverlapping) {
-				nonOverLappingTimes.add(currentTime);
-			}
-		}
-		return nonOverLappingTimes;
+        TimeRange currentTime = overLappingTimes.get(0);
+		for (TimeRange overLappingTime: overLappingTimes) {
+            if (overLappingTime.overlaps(currentTime)) {
+                currentTime = consolidate(currentTime, overLappingTime);
+                continue;
+            } 
+            nonOverLappingTimes.add(TimeRange.fromStartEnd(currentTime.start(), currentTime.end(), false));
+            currentTime = overLappingTime;
+        }
+        nonOverLappingTimes.add(TimeRange.fromStartEnd(currentTime.start(), currentTime.end(), false));
+        return nonOverLappingTimes;
 	}
 }
