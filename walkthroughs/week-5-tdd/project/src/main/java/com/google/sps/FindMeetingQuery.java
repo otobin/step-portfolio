@@ -57,11 +57,11 @@ public final class FindMeetingQuery {
 			return entireDay;
 		}
 
-		// Sort the times by earliest start 
+        // Sort the unavailable times by earliest start time 
         Collections.sort(unavailableTimes, TimeRange.ORDER_BY_START);
 
 		// Combine the required overlapping events into a list of separate timeranges to 
-        // make them easier to process in the second part
+        // make them easier to process while finding gaps between required events
 		unavailableTimes = consolidateAll(unavailableTimes);
 
 		// Get the time before the first event.
@@ -90,38 +90,35 @@ public final class FindMeetingQuery {
 		return availableTimes;  
 	}
 
-	// Takes in two TimeRanges that overlap and combines them into one larger one that 
-	// encompasses them both
-	public TimeRange consolidate(TimeRange timeRange1, TimeRange timeRange2) {
-    // 2 TimeRanges can overlap but not contain each other, but 2 TimeRanges
-    // cannot contain each other without overlapping, so the order on these 
-    // if else statements matters.
-		if (timeRange1.contains(timeRange2)) {
-			return timeRange1;
-		} else if (timeRange2.contains(timeRange1)) {
-			return timeRange2;
-		} else {
-			int start = Math.min(timeRange1.start(), timeRange2.start());
-			int end = Math.max(timeRange1.end(), timeRange2.end());
-			return TimeRange.fromStartEnd(start, end, false);
-		}
-	}
+    // Consolidates two overlapping events into one. An event can overlap another event
+    // but not be contained by an event, so the order of the if else statements here matters.
+    public TimeRange consolidate(TimeRange timeRange1, TimeRange timeRange2) {
+        if (timeRange1.contains(timeRange2)) {
+            return timeRange1;
+        } else if (timeRange2.contains(timeRange1)) {
+            return timeRange2;
+        } else {
+            int start = Math.min(timeRange1.start(), timeRange2.start());
+            int end = Math.max(timeRange1.end(), timeRange2.end());
+            return TimeRange.fromStartEnd(start, end, false);
+        }
+    }
 
-	// consolidateAll takes in the list of unavailable times that are possibly overlapping
-	// and returns a list of unavailable times with no overlaps.
-	public ArrayList<TimeRange> consolidateAll(ArrayList<TimeRange> unavailableTimes) {
-		ArrayList<TimeRange> overLappingTimes = new ArrayList<TimeRange>(unavailableTimes);
-		ArrayList<TimeRange> nonOverLappingTimes = new ArrayList<TimeRange>();
+    // ConsolidateAll takes in the list of unavailable times that are possibly overlapping
+    // and returns a list of unavailable times with no overlaps.
+    public ArrayList<TimeRange> consolidateAll(ArrayList<TimeRange> unavailableTimes) {
+        ArrayList<TimeRange> overLappingTimes = new ArrayList<TimeRange>(unavailableTimes);
+        ArrayList<TimeRange> nonOverLappingTimes = new ArrayList<TimeRange>();
         TimeRange currentTime = overLappingTimes.get(0);
-		for (TimeRange overLappingTime: overLappingTimes) {
+        for (TimeRange overLappingTime: overLappingTimes) {
             if (overLappingTime.overlaps(currentTime)) {
                 currentTime = consolidate(currentTime, overLappingTime);
                 continue;
-            } 
-            nonOverLappingTimes.add(TimeRange.fromStartEnd(currentTime.start(), currentTime.end(), false));
+            }
+            nonOverLappingTimes.add(currentTime);
             currentTime = overLappingTime;
         }
-        nonOverLappingTimes.add(TimeRange.fromStartEnd(currentTime.start(), currentTime.end(), false));
+        nonOverLappingTimes.add(currentTime);
         return nonOverLappingTimes;
-	}
+    }
 }
