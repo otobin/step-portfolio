@@ -25,10 +25,9 @@ public final class FindMeetingQuery {
   // (duration and attendees) return a collection of the time ranges within which the meeting
   // can be booked.
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    HashSet<String> attendees = new HashSet<String>(request.getAttendees());
+    HashSet<String> requiredAttendees = new HashSet<String>(request.getAttendees());
+		HashSet<String> optionalAttendees = new HashSet<String>(request.getOptionalAttendees());
     long duration = request.getDuration();
-    ArrrayList<TimeRange> unavailableTimes = new ArrayList<TimeRange>();
-    ArrayList<TimeRange> availableTimes = new ArrayList<TimeRange>();
     Collection<TimeRange> entireDay = new ArrayList<TimeRange>(Arrays.asList(TimeRange.WHOLE_DAY));
 
     // If the duration is over a day, then there is no time available
@@ -36,12 +35,47 @@ public final class FindMeetingQuery {
       return unavailableTimes;
     }
 
-    // If there are no attendees, then the entire day is available by default
-    if (attendees.isEmpty()) {
+    if (requiredAttendees.isEmpty()) {
+      if (optionalAttendees.isEmpty()) {
+				// No attendees, so return the entire day by default
+				return entireDay;
+			} else {
+				// No required attendees, so treat optional attendees like required attendees
+				requiredAttendees = optionalAttendees;
+			}
+    }
+
+		// Get the unavailable times for both the required attendees and optional attendees
+		ArrayList<TimeRange> requiredUnavailableTime =  getUnavailableTimes(requiredAttendees, events);
+		ArrayList<TimeRange> optionalUnavailableTime = getUnavailableTimes(optionalAttendees, events);
+
+    // If there are no meetings for the required attendees, return the entire day
+    if (requiredUnavailableTimes.size() == 0) {
       return entireDay;
     }
 
-    // Get all of the TimeRanges when required attendees are in meetings
+		// Combine and consolidate the unavailable time for both optional and required attendees
+		ArrayList<TimeRange> combinedTime = new ArrayList<TimeRange>();
+		combinedTime.addAll(requiredUnavailableTime);
+		combinedTime.addAll(optionalUnavailableTime);
+		Collections.sort(combinedTime, TimeRange.ORDER_BY_START);
+		combinedTime = consolidateAll(combinedTime);
+
+		// Sort and combine the unavailable time for just the required attendees
+		Collections.sort(requiredUnavailableTime, TimeRange.ORDER_BY_START);
+		requiredUnavailableTime = consolidateAll(requiredUnavailableTime);
+
+		// Find the available times for both optional and required and just required.
+		ArrayList<TimeRange> combinedAvailableTime = findAvailableTimes(combinedTime, duration);
+		ArrayList<TimeRange> requiredAvailableTime = findAvailableTime(requiredUnavailableTime, duration);
+		Collection<TimeRange> result = combinedAvailableTime.isEmpty() ? requiredAvailableTime : combinedAvailableTime;
+		return result;
+  }
+
+
+  // getUnavailableTimes takes in a hashset of attendees and a list of events and returns
+	// the TimeRanges where the attendees in the hash set are required to attend the event
+	public getUnavailableTimes(HashSet<String> attendees, Collection<Event> events) {
     for (Event event: events) {
       HashSet<String> eventAttendees = new HashSet<String>(event.getAttendees());
       eventAttendees.retainAll(attendees);
@@ -50,20 +84,16 @@ public final class FindMeetingQuery {
         unavailableTimes.add(event.getWhen());
       }
     }
-    
-    // If there are no meetings for the required attendees, return the entire day
-    if (unavailableTimes.size() == 0) {
-      return entireDay;
-    }
+		return unavailableTimes;
+	}
 
-    // Sort the unavailable times by earliest start time
-    Collections.sort(unavailableTimes, TimeRange.ORDER_BY_START);
+  // Given an array list of unavailable unavailable TimeRanges ordered by start time that are 
+  // guranteed not to overlap, findAvailableTimes iterates through and finds available gaps
+  // that are greater than or equal to the given duration
+  public ArrayList<TimeRange> findAvailableTimes(ArrayList<TimeRange> unavailableTimes, int duration) {
+    ArrayList<TimeRange> availableTimes = new ArrayList<TimeRange>();
     
-    // Combine the required overlapping events into a list of separate timeranges to make
-    // them easier to process while finding gaps between the required events 
-    unavailableTimes = consolidateAll(unavailableTimes);
-
-    // Get the time before the first event 
+		// Get the time before the first event 
     TimeRange firstEvent = unavailableTimes.get(0);
     int startDif = firstEvent.start() - TimeRange.START_OF_DAY;
     if (startDif >= duration) {
