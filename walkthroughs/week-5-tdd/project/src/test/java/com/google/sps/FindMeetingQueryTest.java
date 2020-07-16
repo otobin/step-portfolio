@@ -270,5 +270,118 @@ public final class FindMeetingQueryTest {
 
     Assert.assertEquals(expected, actual);
   }
+
+  @Test
+  public void testConsolidateContains() {
+    // Tests the consolidate() function to make sure that it correctly combines events when 
+    // one event contains the other.
+    //
+    // TimeRanges  : |--|B--|-----A----|-|-| (B contains A)
+    // Returns     : |--|------A---------|-| (Only one time Range including both)
+    // Options :
+
+    TimeRange timeRange1 = TimeRange.fromStartEnd(10, 14, false);
+    TimeRange timeRange2 = TimeRange.fromStartEnd(11, 13, false);
+    TimeRange timeRangeActual = query.consolidate(timeRange1, timeRange2);
+    TimeRange expected = TimeRange.fromStartEnd(10, 14, false);
+    Assert.assertEquals(timeRangeActual, expected);
+  }
+
+    @Test
+  public void testConsolidateOverlaps() {
+    // Tests the consolidate() function to make sure that it correctly combines events when 
+    // one event overlaps the other.
+    //
+    // TimeRanges  : |--|-B-|-|---A---|----| (B and A overlap)
+    // Returns     : |--|------A------|----| (Only one time Range including both)
+    // Options :
+
+    TimeRange timeRange1 = TimeRange.fromStartEnd(10, 14, false);
+    TimeRange timeRange2 = TimeRange.fromStartEnd(13, 15, false);
+    TimeRange timeRangeActual = query.consolidate(timeRange1, timeRange2);
+    TimeRange expected = TimeRange.fromStartEnd(10, 15, false);
+    Assert.assertEquals(timeRangeActual, expected);
+  }
+
+  @Test
+  public void testConsolidateAll() {
+    // Tests the consolidateAll() function to make sure that it correctly combines multiple 
+    // timeranges that overlap into a list of coherent time ranges.
+    TimeRange timeRange1 = TimeRange.fromStartEnd(1, 3, false);
+    TimeRange timeRange2 = TimeRange.fromStartEnd(2, 4, false);
+    TimeRange timeRange3 = TimeRange.fromStartEnd(3, 5, false);
+    ArrayList<TimeRange> expected = new ArrayList<TimeRange>(Arrays.asList(TimeRange.fromStartEnd(1, 5, false)));
+    ArrayList<TimeRange> test = new ArrayList<TimeRange>(Arrays.asList(timeRange1, timeRange2, timeRange3));
+    ArrayList<TimeRange> actual = query.consolidateAll(test);
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void testConsolidateAllOverlapping() {
+    // Tests the consolidateAll() function to make sure that it correctly combines multiple 
+    // timeranges that overlap into a list of coherent time ranges.
+    TimeRange timeRange1 = TimeRange.fromStartEnd(1, 3, false);
+    TimeRange timeRange2 = TimeRange.fromStartEnd(2, 4, false);
+    TimeRange timeRange3 = TimeRange.fromStartEnd(3, 5, false);
+    ArrayList<TimeRange> expected = new ArrayList<TimeRange>(Arrays.asList(TimeRange.fromStartEnd(1, 5, false)));
+    ArrayList<TimeRange> test = new ArrayList<TimeRange>(Arrays.asList(timeRange1, timeRange2, timeRange3));
+    ArrayList<TimeRange> actual = query.consolidateAll(test);
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void testConsolidateAllContaining() {
+    // Tests the consolidateAll() function to make sure that it correctly combines multiple 
+    // timeranges that contain each other into a list of coherent time ranges.
+    TimeRange timeRange1 = TimeRange.fromStartEnd(1, 6, false);
+    TimeRange timeRange2 = TimeRange.fromStartEnd(2, 4, false);
+    TimeRange timeRange3 = TimeRange.fromStartEnd(3, 5, false);
+    ArrayList<TimeRange> expected = new ArrayList<TimeRange>(Arrays.asList(TimeRange.fromStartEnd(1, 6, false)));
+    ArrayList<TimeRange> test = new ArrayList<TimeRange>(Arrays.asList(timeRange1, timeRange2, timeRange3));
+    ArrayList<TimeRange> actual = query.consolidateAll(test);
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void testConsolidateAllContainingAndOverlapping() {
+    // Tests the consolidateAll() function to make sure that it correctly combines multiple 
+    // timeranges that contain each other and also overlap into different time ranges
+    TimeRange timeRange1 = TimeRange.fromStartEnd(1, 6, false);
+    TimeRange timeRange2 = TimeRange.fromStartEnd(2, 4, false);
+    TimeRange timeRange3 = TimeRange.fromStartEnd(7, 9, false);
+    TimeRange timeRange4 = TimeRange.fromStartEnd(8, 10, false);
+    TimeRange timeRange5 = TimeRange.fromStartEnd(11, 12, false);
+    ArrayList<TimeRange> expected = new ArrayList<TimeRange>(Arrays.asList(TimeRange.fromStartEnd(1, 6, false), 
+        TimeRange.fromStartEnd(7, 10, false), TimeRange.fromStartEnd(11, 12, false)));
+    ArrayList<TimeRange> test = new ArrayList<TimeRange>(Arrays.asList(timeRange1, timeRange2, timeRange3, timeRange4, timeRange5));
+    ArrayList<TimeRange> actual = query.consolidateAll(test);
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void testConsolidateAllNotOverlapping() {
+    // Tests the consolidateAll() function to make sure that it does not combine time 
+    // ranges if it doesn't have to 
+    TimeRange timeRange1 = TimeRange.fromStartEnd(1, 2, false);
+    TimeRange timeRange2 = TimeRange.fromStartEnd(3, 4, false);
+    TimeRange timeRange3 = TimeRange.fromStartEnd(5, 6, false);
+    ArrayList<TimeRange> expected = new ArrayList<TimeRange>(Arrays.asList(timeRange1, timeRange2, timeRange3));
+    ArrayList<TimeRange> actual = query.consolidateAll(expected);
+    Assert.assertEquals(actual, expected);
+  }
+
+    @Test
+  public void testQueryMultipleOverlapping() {
+      // Tests multiple events that overlap
+    Collection<Event> events = Arrays.asList(
+        new Event("Event 1",TimeRange.fromStartDuration(TIME_0800AM, DURATION_60_MINUTES), Arrays.asList(PERSON_A)),
+        new Event("Event 2", TimeRange.fromStartDuration(TIME_0830AM, DURATION_60_MINUTES), Arrays.asList(PERSON_B)),
+        new Event("Event 3", TimeRange.fromStartDuration(TIME_0900AM, DURATION_60_MINUTES), Arrays.asList(PERSON_A)));
+    MeetingRequest request = new MeetingRequest(Arrays.asList(PERSON_A, PERSON_B), DURATION_30_MINUTES);
+    Collection<TimeRange> actual = query.query(events, request);
+    Collection<TimeRange> expected = Arrays.asList(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0800AM, false),
+        TimeRange.fromStartEnd(TIME_1000AM, TimeRange.END_OF_DAY, true));
+    Assert.assertEquals(expected, actual);
+  }
 }
 
