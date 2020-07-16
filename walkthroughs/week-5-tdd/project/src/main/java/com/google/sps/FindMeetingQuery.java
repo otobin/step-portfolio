@@ -57,11 +57,11 @@ public final class FindMeetingQuery {
 			return entireDay;
 		}
 
-        // Sort the unavailable times by earliest start time 
-        Collections.sort(unavailableTimes, TimeRange.ORDER_BY_START);
+    // Sort the unavailable times by earliest start time 
+    Collections.sort(unavailableTimes, TimeRange.ORDER_BY_START);
 
 		// Combine the required overlapping events into a list of separate timeranges to 
-        // make them easier to process while finding gaps between required events
+    // make them easier to process while finding gaps between required events
 		unavailableTimes = consolidateAll(unavailableTimes);
 
 		// Get the time before the first event.
@@ -93,15 +93,15 @@ public final class FindMeetingQuery {
     // Consolidates two overlapping events into one. An event can overlap another event
     // but not be contained by an event, so the order of the if else statements here matters.
     public TimeRange consolidate(TimeRange timeRange1, TimeRange timeRange2) {
-        if (timeRange1.contains(timeRange2)) {
-            return timeRange1;
-        } else if (timeRange2.contains(timeRange1)) {
-            return timeRange2;
-        } else {
-            int start = Math.min(timeRange1.start(), timeRange2.start());
-            int end = Math.max(timeRange1.end(), timeRange2.end());
-            return TimeRange.fromStartEnd(start, end, false);
-        }
+      if (timeRange1.contains(timeRange2)) {
+        return timeRange1;
+      } else if (timeRange2.contains(timeRange1)) {
+        return timeRange2;
+      } else {
+        int start = Math.min(timeRange1.start(), timeRange2.start());
+        int end = Math.max(timeRange1.end(), timeRange2.end());
+        return TimeRange.fromStartEnd(start, end, false);
+      }
     }
 
     // ConsolidateAll takes in the list of unavailable times that are possibly overlapping
