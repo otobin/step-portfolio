@@ -73,8 +73,7 @@ public final class FindMeetingQuery {
 		return result;
   }
 
-
-    // getUnavailableTimes takes in a hashset of attendees and a list of events and returns
+  // getUnavailableTimes takes in a hashset of attendees and a list of events and returns
 	// the TimeRanges where the attendees in the hash set are required to attend the event
 	public ArrayList<TimeRange> getUnavailableTimes(HashSet<String> attendees, Collection<Event> events) {
     ArrayList<TimeRange> unavailableTimes = new ArrayList<TimeRange>();
