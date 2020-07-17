@@ -29,6 +29,7 @@ public final class FindMeetingQuery {
 		HashSet<String> optionalAttendees = new HashSet<String>(request.getOptionalAttendees());
     long duration = request.getDuration();
     Collection<TimeRange> entireDay = new ArrayList<TimeRange>(Arrays.asList(TimeRange.WHOLE_DAY));
+    ArrayList<TimeRange> unavailableTimes = new ArrayList<TimeRange>();
 
     // If the duration is over a day, then there is no time available
     if (duration > TimeRange.WHOLE_DAY.duration()) {
@@ -50,7 +51,7 @@ public final class FindMeetingQuery {
 		ArrayList<TimeRange> optionalUnavailableTime = getUnavailableTimes(optionalAttendees, events);
 
     // If there are no meetings for the required attendees, return the entire day
-    if (requiredUnavailableTimes.size() == 0) {
+    if (requiredUnavailableTime.size() == 0) {
       return entireDay;
     }
 
@@ -67,20 +68,21 @@ public final class FindMeetingQuery {
 
 		// Find the available times for both optional and required and just required.
 		ArrayList<TimeRange> combinedAvailableTime = findAvailableTimes(combinedTime, duration);
-		ArrayList<TimeRange> requiredAvailableTime = findAvailableTime(requiredUnavailableTime, duration);
+		ArrayList<TimeRange> requiredAvailableTime = findAvailableTimes(requiredUnavailableTime, duration);
 		Collection<TimeRange> result = combinedAvailableTime.isEmpty() ? requiredAvailableTime : combinedAvailableTime;
 		return result;
   }
 
 
-  // getUnavailableTimes takes in a hashset of attendees and a list of events and returns
+    // getUnavailableTimes takes in a hashset of attendees and a list of events and returns
 	// the TimeRanges where the attendees in the hash set are required to attend the event
-	public getUnavailableTimes(HashSet<String> attendees, Collection<Event> events) {
+	public ArrayList<TimeRange> getUnavailableTimes(HashSet<String> attendees, Collection<Event> events) {
+    ArrayList<TimeRange> unavailableTimes = new ArrayList<TimeRange>();
     for (Event event: events) {
       HashSet<String> eventAttendees = new HashSet<String>(event.getAttendees());
       eventAttendees.retainAll(attendees);
       // ^^ eventAttendees now only has the intersection of the two lists
-      if (!eventAtttendees.isEmpty()) {
+      if (!eventAttendees.isEmpty()) {
         unavailableTimes.add(event.getWhen());
       }
     }
@@ -90,7 +92,7 @@ public final class FindMeetingQuery {
   // Given an array list of unavailable unavailable TimeRanges ordered by start time that are 
   // guranteed not to overlap, findAvailableTimes iterates through and finds available gaps
   // that are greater than or equal to the given duration
-  public ArrayList<TimeRange> findAvailableTimes(ArrayList<TimeRange> unavailableTimes, int duration) {
+  public ArrayList<TimeRange> findAvailableTimes(ArrayList<TimeRange> unavailableTimes, long duration) {
     ArrayList<TimeRange> availableTimes = new ArrayList<TimeRange>();
     
 		// Get the time before the first event 
