@@ -32,7 +32,7 @@ public final class FindMeetingQuery {
         ArrayList<TimeRange> unavailableTimes = new ArrayList<TimeRange> ();
 
         // If the duration is over a day, then there is no time available
-        if (duration> TimeRange.WHOLE_DAY.duration()) {
+        if (duration > TimeRange.WHOLE_DAY.duration()) {
             return unavailableTimes;
         }
 
@@ -50,13 +50,12 @@ public final class FindMeetingQuery {
         ArrayList<TimeRange> requiredUnavailableTime = getUnavailableTimes(requiredAttendees, events);
         ArrayList<TimeRange> optionalUnavailableTime = getUnavailableTimes(optionalAttendees, events);
 
-        // If there are no meetings for the required attendees, return the entire day
-        if (requiredUnavailableTime.size() == 0) {
+        if (requiredUnavailableTime.size() == 0 && optionalUnavailableTime.size() == 0) {
             return entireDay;
         }
 
         // Combine and consolidate the unavailable time for both optional and required attendees
-        ArrayList   <TimeRange> combinedTime = new ArrayList   <TimeRange> ();
+        ArrayList<TimeRange> combinedTime = new ArrayList<TimeRange>();
         combinedTime.addAll(requiredUnavailableTime);
         combinedTime.addAll(optionalUnavailableTime);
         Collections.sort(combinedTime, TimeRange.ORDER_BY_START);
@@ -88,7 +87,7 @@ public final class FindMeetingQuery {
         return unavailableTimes;
     }
 
-    // Given an array list of unavailable unavailable TimeRanges ordered by start time that are 
+    // Given an array list of unavailable TimeRanges ordered by start time that are 
     // guranteed not to overlap, findAvailableTimes iterates through and finds available gaps
     // that are greater than or equal to the given duration
     public ArrayList<TimeRange> findAvailableTimes(ArrayList<TimeRange> unavailableTimes, long duration) {
